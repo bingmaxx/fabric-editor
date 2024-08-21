@@ -1,11 +1,13 @@
 :root {
   /* font-size */
-  --fs-b: 16px;
-  --fs-llg: 24px;
-  --fs-lg: 20px;
-  --fs: 16px;
-  --fs-sm: 14px;
-  --fs-xs: 12px;
+  --fs-4xl: 2.25rem; /* 36px */
+  --fs-3xl: 1.875rem; /* 30px */
+  --fs-2xl: 1.5rem; /* 24px */
+  --fs-xl: 1.25rem; /* 20px */
+  --fs-lg: 1.125rem; /* 18px */
+  --fs-base: 1rem; /* 16px */
+  --fs-sm: 0.875rem; /* 14px */
+  --fs-xs: 0.75rem; /* 12px */
 
   /* color */
   --c-primary: #00d878;

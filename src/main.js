@@ -2,11 +2,11 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import PubSvg from '@/components/PubSvg.vue'
+import registerGlobalComponents from './global-components'
 
 const app = createApp(App)
 
-app.component('PubSvg', PubSvg)
+registerGlobalComponents(app)
 
 app.use(router)
 
