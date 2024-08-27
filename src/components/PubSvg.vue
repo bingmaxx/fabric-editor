@@ -16,7 +16,12 @@ const props = defineProps({
   }
 });
 
-const ComponentSvg = defineAsyncComponent(() => import(`@/assets/svg/${props.name}.svg`))
+const ComponentSvg = defineAsyncComponent({
+  loader: () => import(`@/assets/svg/${props.name}.svg`).catch(() => {
+    return Promise.reject(new Error(`Failed to load SVG: ${props.name}`))
+  }),
+  errorComponent: '',
+})
 </script>
 
 <template>
