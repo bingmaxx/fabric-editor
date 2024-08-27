@@ -15,14 +15,14 @@ export const fabricPub = {
    */
   toolList: [
     {
-      key: 'tools_img_add',
+      key: 'tool_img',
       value: '加图',
       immediate: true,
       draw: false,
       position: false
     },
     {
-      key: 'tools_text_add',
+      key: 'tool_text',
       value: '文字',
       immediate: true,
       draw: false,
