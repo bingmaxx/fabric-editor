@@ -1,7 +1,8 @@
 <script setup>
 import { onMounted } from 'vue'
-import { Template } from '@/logic/template.class';
+import { Template } from '@/logic/template.class.js'
 import UnitAction from './components/UnitAction.vue'
+import UnitTab from './components/UnitTab.vue'
 
 const props = defineProps({
   width: {
@@ -19,11 +20,17 @@ const tempObj = {
   id: canvasID,
   width: props.width,
   height: props.height,
+  backgroundColor: 'white',
 }
+let template = null
 
 onMounted(() => {
-  const template = new Template(tempObj)
+  template = new Template(tempObj)
 })
+
+function download() {
+  template.download()
+}
 </script>
 
 
@@ -40,7 +47,9 @@ onMounted(() => {
       <canvas :id="canvasID"></canvas>
     </div>
 
-    <div class="container-function"></div>
+    <div class="container-function">
+      <UnitTab value-right="下载" @right="download"></UnitTab>
+    </div>
   </div>
 </template>
 
