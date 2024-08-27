@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { Template } from '@/logic/template.class.js'
 import UnitAction from './components/UnitAction.vue'
 import UnitTab from './components/UnitTab.vue'
+import UnitTools from './components/UnitTools.vue'
 
 const props = defineProps({
   width: {
@@ -49,6 +50,8 @@ function download() {
 
     <div class="container-function">
       <UnitTab value-right="下载" @right="download"></UnitTab>
+
+      <UnitTools></UnitTools>
     </div>
   </div>
 </template>
@@ -82,5 +85,9 @@ function download() {
 .container-function {
   width: 320px;
   border-left: 1px solid #282828;
+}
+
+.container-function .unit-tab {
+  border-bottom: 1px solid #282828;
 }
 </style>
