@@ -1,5 +1,5 @@
 import { fabric } from 'fabric'
-import { downloadTagA } from '@/utils/index.js'
+import { downloadTagA, imgWH } from '@/utils/index.js'
 /**
  * 将 fabric 打平
  * @param {Object} data
@@ -37,6 +37,35 @@ export class Template {
     })
   }
 
+  /**
+   * 限制尺寸并返回中点
+   * @param {Number} w 长
+   * @param {Number} h 宽
+   * @param {String} type
+   *   'cover' 保持比例，保证完全覆盖的最小尺寸
+   *   'contain' 保持比例，保证不超出的最大尺寸
+   * @param {Number} W 限制长度最大值
+   * @param {Number} H 限制宽度最大值
+   */
+  limitSize(w, h, type = 'cover', W, H) {
+    const zoom = this.canvas.getZoom()
+    W = W || this.canvas.getWidth() / zoom / 2
+    H = H || this.canvas.getHeight() / zoom / 2
+    // w * scale = W;
+    let scale = W / w
+    if (type === 'cover' && h * scale < H) {
+      scale = H / h
+    } else if (type === 'contain' && h * scale > H) {
+      scale = H / h
+    }
+    return {
+      left: W,
+      top: H,
+      scaleX: scale,
+      scaleY: scale
+    }
+  }
+
   init(options) {
     const { backgroundColor } = options
     const obj = this.getStyleSize()
@@ -62,6 +91,53 @@ export class Template {
       width = h_max * ratio
     }
     return { width, height }
+  }
+
+  /**
+   * 创建图片对象
+   * @param {String} img 只支持远程图片链接 && base64
+   * @param {Object} data 图片对象参数
+   */
+  static createImage(img, data) {
+    return new Promise((resolve) => {
+      // const image = new fabric.Image(img, data);
+      fabric.Image.fromURL(img, (image) => {
+        image.set(data)
+        resolve(image)
+      })
+    })
+  }
+
+  /**
+   * 添加 Image 对象
+   * @param {Boolean} realSize 是否保持原始尺寸
+   */
+  async addImage(img, data = {}, realSize = false) {
+    const { width, height } = await imgWH(img)
+    const { left, top, scaleX, scaleY } = this.limitSize(width, height, 'contain')
+    const DATA = {
+      left,
+      top,
+      originX: 'center', // left 的起点
+      originY: 'center', // top 的起点
+      crossOrigin: 'Anonymous',
+      scaleX: realSize ? 1 : scaleX,
+      scaleY: realSize ? 1 : scaleY
+      // selectable: false,
+    }
+    const image = await Template.createImage(img, { ...DATA, ...data })
+    this.afterCreateObj(image)
+    return image
+  }
+
+  /**
+   * 创建对象之后的操作
+   */
+  afterCreateObj(obj, active = true) {
+    this.canvas.add(obj)
+    if (!active) return
+    this.canvas.setActiveObject(obj)
+    this.hasActive = true
   }
 
   /**

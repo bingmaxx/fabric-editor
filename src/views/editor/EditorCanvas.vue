@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, onMounted, computed } from 'vue'
 import { Template } from '@/logic/template.class.js'
+import { inputImageToDataURL } from '@/utils/index.js'
 import UnitAction from './components/UnitAction.vue'
 import UnitTab from './components/UnitTab.vue'
 import UnitTools from './components/UnitTools.vue'
@@ -33,6 +34,12 @@ const componentTools = {
 const componentTool = computed(() => componentTools[toolsObj.component])
 const hasTool = computed(() => !!toolsObj.key)
 
+const toolsFuncObj = {
+  tool_img: {
+    add: addImg,
+  },
+}
+
 onMounted(() => {
   template = new Template(tempObj)
 })
@@ -43,11 +50,28 @@ function download() {
 
 function toolsHandle(item) {
   Object.assign(toolsObj, item)
+  const { key, immediate } = toolsObj
+  if (!immediate) return
+  if (!toolsFuncObj[key] || typeof toolsFuncObj[key].add !== 'function') return
+  toolsFuncObj[key].add()
 }
 
 function toolsConfirm() {
   template.finish()
   toolsHandle({ key: '', component: '', value: '' })
+}
+
+/**
+ * 添加图片
+ */
+async function addImg() {
+  try {
+    const base64 = await inputImageToDataURL();
+    const data = { tool: 'tool_img' };
+    await template.addImage(base64, data);
+  } catch (err) {
+    console.log('[LOG] catch: ', err);
+  }
 }
 </script>
 
