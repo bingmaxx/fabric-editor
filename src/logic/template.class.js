@@ -80,6 +80,12 @@ export class Template {
     downloadTagA({ URL })
   }
 
+  finish() {
+    this.hasActive = false
+    this.canvas.discardActiveObject()
+    this.canvas.requestRenderAll()
+  }
+
   test() {
     // console.log('[LOG] getObjects: ', this.canvas.getObjects())
     // this.canvas.forEachObject(layer => (console.log('[LOG] layer.type: ', layer.type)));

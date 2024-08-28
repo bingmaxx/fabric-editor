@@ -16,6 +16,7 @@ export const fabricPub = {
   toolList: [
     {
       key: 'tool_img',
+      component: 'UnitToolImg',
       value: '加图',
       immediate: true,
       draw: false,
@@ -23,6 +24,7 @@ export const fabricPub = {
     },
     {
       key: 'tool_text',
+      component: 'UnitToolText',
       value: '文字',
       immediate: true,
       draw: false,

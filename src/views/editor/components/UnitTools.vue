@@ -5,15 +5,15 @@ const LIST = fabricPub.toolList
 
 const emit = defineEmits(['click'])
 
-function handle(key) {
-  emit('click', key)
+function handle(item) {
+  emit('click', item)
 }
 </script>
 
 
 <template>
   <div class="unit-tools">
-    <div class="box" v-for="item in LIST" :key="item.key" @click="handle(item.key)">
+    <div class="box" v-for="item in LIST" :key="item.key" @click="handle(item)">
       <PubSvg :name="item.key" color="white" size="1.25rem"></PubSvg>
       <p>{{ item.value }}</p>
     </div>

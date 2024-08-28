@@ -33,9 +33,9 @@ function handle(type) {
 <template>
   <div class="unit-tab">
     <template v-if="isIcon">
-      <PubSvg :name="valueLeft" color="white" size="1.25rem" @click="handle('left')"></PubSvg>
+      <PubSvg v-if="valueLeft" :name="valueLeft" color="white" size="1.25rem" @click="handle('left')"></PubSvg>
       <p class="title">{{ title }}</p>
-      <PubSvg :name="valueRight" color="white" size="1.25rem" @click="handle('right')"></PubSvg>
+      <PubSvg v-if="valueRight" :name="valueRight" color="white" size="1.25rem" @click="handle('right')"></PubSvg>
     </template>
 
     <template v-else>

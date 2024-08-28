@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted } from 'vue'
+import { reactive, onMounted, computed } from 'vue'
 import { Template } from '@/logic/template.class.js'
 import UnitAction from './components/UnitAction.vue'
 import UnitTab from './components/UnitTab.vue'
 import UnitTools from './components/UnitTools.vue'
+import UnitToolImg from './components/UnitToolImg.vue'
 
 const props = defineProps({
   width: {
@@ -25,12 +26,28 @@ const tempObj = {
 }
 let template = null
 
+let toolsObj = reactive({})
+const componentTools = {
+  UnitToolImg,
+}
+const componentTool = computed(() => componentTools[toolsObj.component])
+const hasTool = computed(() => !!toolsObj.key)
+
 onMounted(() => {
   template = new Template(tempObj)
 })
 
 function download() {
   template.download()
+}
+
+function toolsHandle(item) {
+  Object.assign(toolsObj, item)
+}
+
+function toolsConfirm() {
+  template.finish()
+  toolsHandle({ key: '', component: '', value: '' })
 }
 </script>
 
@@ -49,9 +66,14 @@ function download() {
     </div>
 
     <div class="container-function">
-      <UnitTab value-right="下载" @right="download"></UnitTab>
+      <UnitTab v-show="!hasTool" value-right="下载" @right="download"></UnitTab>
+      <UnitTab v-show="hasTool" type="icon" value-right="check" @right="toolsConfirm"></UnitTab>
 
-      <UnitTools></UnitTools>
+      <UnitTools v-show="!hasTool" @click="toolsHandle($event)"></UnitTools>
+
+      <KeepAlive>
+        <component :is="componentTool"></component>
+      </KeepAlive>
     </div>
   </div>
 </template>
