@@ -16,9 +16,8 @@ export const downloadTagA = ({ URL, name }) => {
 /**
  * 读取 Blob 中的内容，返回 data: URL
  * @param {File|Blob} file 使用 File 或 Blob 对象指定要读取的文件或数据
- * @return {String} then(result) data: URL
- * @return {-} catch
- * */
+ * @return {String} then data: URL
+ */
 export const fileToDataURL = ({ file }) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -32,64 +31,55 @@ export const fileToDataURL = ({ file }) =>
   })
 
 /**
- * <input type="file"/>
- * @param {Boolean} accept file 类型
+ * <input type="file" /> 选择文件
+ * @param {String} accept file 类型
  * @param {Boolean} multiple 是否允许一个以上 file
- * @return {Array} files
- *   @return {File} file File 对象
- * */
+ * @return {Array} files File 对象数组
+ */
 export const inputFile = ({ accept, multiple }) =>
   new Promise((resolve, reject) => {
-    const elem = document.createElement('input')
-    elem.type = 'file'
-    elem.accept = accept || 'image/*'
-    elem.multiple = multiple || false
-    elem.style.display = 'none'
-
-    // change 事件
     const change = function () {
-      console.log('打印 input change 事件: ', this.files)
       document.body.removeChild(elem)
-      if ([...this.files].length > 0) {
+      if ([...this.files].length) {
         const files = multiple ? [...this.files] : [this.files[0]]
         resolve(files)
       } else {
         reject()
       }
     }
+
+    const elem = document.createElement('input')
+    elem.type = 'file'
+    elem.accept = accept || 'image/*'
+    elem.multiple = multiple || false
+    elem.style.display = 'none'
     elem.addEventListener('change', change)
     document.body.appendChild(elem)
     elem.focus()
     elem.click()
-    // console.log('打印 elem para: ', elem.accept, elem.multiple);
   })
 
 /**
  * 上传图片并获得图片 data: URL - 单图
- * */
-export const inputImageToDataURL = () =>
-  new Promise((resolve, reject) => {
-    inputFile({ accept: 'image/*', multiple: false })
-      .then((res) => {
-        fileToDataURL({ file: res[0] })
-          .then((result) => {
-            resolve(result)
-          })
-          .catch(() => {
-            reject()
-          })
-      })
-      .catch(() => {
-        reject()
-      })
-  })
+ * @return {Promise} result data: URL
+ */
+export const inputImageToDataURL = async () => {
+  try {
+    const res = await inputFile({ accept: 'image/*', multiple: false })
+    const result = await fileToDataURL({ file: res[0] })
+    return result
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 /**
- * 获取图片长，宽
+ * 获取图片宽、高
  * @param {String || Object} img
- * @return {Number} width 图片宽
- * @return {Number} height 图片高
- * @return {String || Object} data_url 图片数据
+ * @return {Object} res
+ * @return {Number} res.width 图片宽
+ * @return {Number} res.height 图片高
+ * @return {Object} res.data_url 图片数据
  */
 export const imgWH = (img) =>
   new Promise((resolve) => {
