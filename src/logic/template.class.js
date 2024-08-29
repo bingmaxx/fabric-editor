@@ -32,7 +32,7 @@ export class Template {
    * @param {Object} canvas
    * @param {Object} json
    */
-  static async loadFromJSON(canvas, json) {
+  static async loadFromJSON({ canvas, json }) {
     return new Promise((resolve) => {
       canvas.loadFromJSON(json, () => resolve(canvas))
     })
@@ -69,55 +69,51 @@ export class Template {
    * 限制尺寸并返回中点
    * @param {Number} w 长
    * @param {Number} h 宽
-   * @param {String} type = 'cover'   保持比例，保证完全覆盖的最小尺寸
-   * @param {String} type = 'contain' 保持比例，保证不超出的最大尺寸
    * @param {Number} w_max 限制最大长度
    * @param {Number} h_max 限制最大宽度
+   * @param {String} type = 'cover'   保持比例，保证完全覆盖的最小尺寸
+   * @param {String} type = 'contain' 保持比例，保证不超出的最大尺寸
    */
-  limitSize(w, h, type = 'cover', w_max, h_max) {
+  limitSize({ w, h, w_max, h_max, type = 'cover' }) {
     w_max = w_max || this.width / 2
     h_max = h_max || this.height / 2
     let scale = w_max / w
     if ((type === 'cover' && h * scale < h_max) || (type === 'contain' && h * scale > h_max)) {
       scale = h_max / h
     }
-    return {
-      left: w_max,
-      top: h_max,
-      scaleX: scale,
-      scaleY: scale
-    }
+    return { left: w_max, top: h_max, scaleX: scale, scaleY: scale }
   }
 
   /**
    * 创建图片对象
-   * @param {String} img 只支持远程图片链接 || base64
+   * @param {String} url 只支持远程图片链接 || base64
    * @param {Object} data 图片对象参数
    */
-  static createImage(img, data) {
+  static createImage({ url, data = {} }) {
     return new Promise((resolve) => {
-      fabric.Image.fromURL(img, (image) => {
+      fabric.Image.fromURL(url, (image) => {
         image.set(data)
         resolve(image)
       })
     })
   }
 
-  async addImage(img, data = {}) {
-    const { width, height } = await imgWH(img)
-    const obj = this.limitSize(width, height, 'contain')
-    const DATA = {
-      ...obj,
+  async addImage({ url, data = {} }) {
+    const { width, height } = await imgWH(url)
+    const obj = this.limitSize({ w: width, h: height, type: 'contain' })
+    const _data = {
       originX: 'center',
       originY: 'center',
-      crossOrigin: 'Anonymous'
+      crossOrigin: 'Anonymous',
+      ...obj,
+      ...data
     }
-    const image = await Template.createImage(img, { ...DATA, ...data })
-    this.afterCreateObj(image)
+    const image = await Template.createImage({ url, data: _data })
+    this.afterCreateObj({ obj: image })
     return image
   }
 
-  afterCreateObj(obj, active = true) {
+  afterCreateObj({ obj, active = true }) {
     this.canvas.add(obj)
     if (!active) return
     this.canvas.setActiveObject(obj)
@@ -131,7 +127,7 @@ export class Template {
 
     const data = { width: this.width, height: this.height, zoom: 1 }
     this.realCanvas = new fabric.Canvas()
-    await Template.loadFromJSON(this.realCanvas, json)
+    await Template.loadFromJSON({ canvas: this.realCanvas, json })
     this.realCanvas.set(data)
     const URL = this.realCanvas.toDataURL()
     downloadTagA({ URL })

@@ -36,7 +36,7 @@ const hasTool = computed(() => !!toolsObj.key)
 
 const toolsFuncObj = {
   tool_img: {
-    add: addImg,
+    add: addImage,
   },
 }
 
@@ -64,11 +64,11 @@ function toolsConfirm() {
 /**
  * 添加图片
  */
-async function addImg() {
+async function addImage() {
   try {
-    const base64 = await inputImageToDataURL();
+    const url = await inputImageToDataURL();
     const data = { tool: 'tool_img' };
-    await template.addImage(base64, data);
+    await template.addImage({ url, data });
   } catch (err) {
     console.log('[LOG] catch: ', err);
   }
