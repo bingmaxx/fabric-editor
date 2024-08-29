@@ -1,5 +1,6 @@
 import { fabric } from 'fabric'
 import { downloadTagA, imgWH } from '@/utils/index.js'
+
 /**
  * 将 fabric 打平
  * @param {Object} data
@@ -37,35 +38,6 @@ export class Template {
     })
   }
 
-  /**
-   * 限制尺寸并返回中点
-   * @param {Number} w 长
-   * @param {Number} h 宽
-   * @param {String} type
-   *   'cover' 保持比例，保证完全覆盖的最小尺寸
-   *   'contain' 保持比例，保证不超出的最大尺寸
-   * @param {Number} W 限制长度最大值
-   * @param {Number} H 限制宽度最大值
-   */
-  limitSize(w, h, type = 'cover', W, H) {
-    const zoom = this.canvas.getZoom()
-    W = W || this.canvas.getWidth() / zoom / 2
-    H = H || this.canvas.getHeight() / zoom / 2
-    // w * scale = W;
-    let scale = W / w
-    if (type === 'cover' && h * scale < H) {
-      scale = H / h
-    } else if (type === 'contain' && h * scale > H) {
-      scale = H / h
-    }
-    return {
-      left: W,
-      top: H,
-      scaleX: scale,
-      scaleY: scale
-    }
-  }
-
   init(options) {
     const { backgroundColor } = options
     const obj = this.getStyleSize()
@@ -94,13 +66,36 @@ export class Template {
   }
 
   /**
+   * 限制尺寸并返回中点
+   * @param {Number} w 长
+   * @param {Number} h 宽
+   * @param {String} type = 'cover'   保持比例，保证完全覆盖的最小尺寸
+   * @param {String} type = 'contain' 保持比例，保证不超出的最大尺寸
+   * @param {Number} w_max 限制最大长度
+   * @param {Number} h_max 限制最大宽度
+   */
+  limitSize(w, h, type = 'cover', w_max, h_max) {
+    w_max = w_max || this.width / 2
+    h_max = h_max || this.height / 2
+    let scale = w_max / w
+    if ((type === 'cover' && h * scale < h_max) || (type === 'contain' && h * scale > h_max)) {
+      scale = h_max / h
+    }
+    return {
+      left: w_max,
+      top: h_max,
+      scaleX: scale,
+      scaleY: scale
+    }
+  }
+
+  /**
    * 创建图片对象
-   * @param {String} img 只支持远程图片链接 && base64
+   * @param {String} img 只支持远程图片链接 || base64
    * @param {Object} data 图片对象参数
    */
   static createImage(img, data) {
     return new Promise((resolve) => {
-      // const image = new fabric.Image(img, data);
       fabric.Image.fromURL(img, (image) => {
         image.set(data)
         resolve(image)
@@ -108,31 +103,20 @@ export class Template {
     })
   }
 
-  /**
-   * 添加 Image 对象
-   * @param {Boolean} realSize 是否保持原始尺寸
-   */
-  async addImage(img, data = {}, realSize = false) {
+  async addImage(img, data = {}) {
     const { width, height } = await imgWH(img)
-    const { left, top, scaleX, scaleY } = this.limitSize(width, height, 'contain')
+    const obj = this.limitSize(width, height, 'contain')
     const DATA = {
-      left,
-      top,
-      originX: 'center', // left 的起点
-      originY: 'center', // top 的起点
-      crossOrigin: 'Anonymous',
-      scaleX: realSize ? 1 : scaleX,
-      scaleY: realSize ? 1 : scaleY
-      // selectable: false,
+      ...obj,
+      originX: 'center',
+      originY: 'center',
+      crossOrigin: 'Anonymous'
     }
     const image = await Template.createImage(img, { ...DATA, ...data })
     this.afterCreateObj(image)
     return image
   }
 
-  /**
-   * 创建对象之后的操作
-   */
   afterCreateObj(obj, active = true) {
     this.canvas.add(obj)
     if (!active) return
@@ -140,9 +124,6 @@ export class Template {
     this.hasActive = true
   }
 
-  /**
-   * 画布保存为图片
-   */
   async download() {
     const json = this.canvas.toJSON()
     const objects = fabricJsonFlat(json)
