@@ -1,4 +1,4 @@
-# fabric-beautiful
+# fabric-editor
 
 ### 起项目
 
