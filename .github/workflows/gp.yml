@@ -35,13 +35,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      # - name: Install pnpm
-      #   run: npm install -g pnpm
+          cache: 'pnpm'
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
       - name: Build
-        run: npm run build
+        run: pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
