@@ -39,7 +39,7 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --pnpm-lock
       - name: Build
         run: pnpm run build
       - name: Setup Pages
