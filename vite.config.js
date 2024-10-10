@@ -6,6 +6,7 @@ import svgLoader from 'vite-svg-loader'
 
 export default defineConfig({
   base: '/fabric-editor/',
+
   plugins: [
     vue(),
     svgLoader(),
@@ -13,9 +14,14 @@ export default defineConfig({
       defaultSizes: 'parsed',
     }),
   ],
+
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
+
+  esbuild: {
+    drop: ["console", "debugger"],
+  },
 })
