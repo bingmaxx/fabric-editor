@@ -1,5 +1,6 @@
 import { fabric } from 'fabric'
 import { downloadTagA, imgWH } from '@/utils/index.js'
+import { initBorder } from '@/logic/border.js'
 
 /**
  * 将 fabric 打平
@@ -25,6 +26,7 @@ export class Template {
     this.realCanvas = {} // 原始尺寸 canvas
     this.hasActive = false // 是否有对象被选中
 
+    initBorder(fabric)
     this.init(options)
   }
 
