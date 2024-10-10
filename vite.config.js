@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { analyzer } from 'vite-bundle-analyzer'
+// import { analyzer } from 'vite-bundle-analyzer'
 import svgLoader from 'vite-svg-loader'
 
 export default defineConfig({
@@ -10,9 +10,9 @@ export default defineConfig({
   plugins: [
     vue(),
     svgLoader(),
-    analyzer({
-      defaultSizes: 'parsed',
-    }),
+    // analyzer({
+    //   defaultSizes: 'parsed',
+    // }),
   ],
 
   resolve: {
