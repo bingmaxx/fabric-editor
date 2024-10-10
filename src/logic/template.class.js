@@ -24,6 +24,7 @@ export class Template {
     this.canvas = {} // 全局 canvas
     this.realCanvas = {} // 原始尺寸 canvas
     this.hasActive = false // 是否有对象被选中
+
     this.init(options)
   }
 
@@ -113,6 +114,14 @@ export class Template {
     return image
   }
 
+  replaceImage({ url }) {
+    console.log('[LOG] url: ', url)
+  }
+
+  tailorImage() {
+
+  }
+
   afterCreateObj({ obj, active = true }) {
     this.canvas.add(obj)
     if (!active) return
@@ -141,6 +150,6 @@ export class Template {
 
   test() {
     // console.log('[LOG] getObjects: ', this.canvas.getObjects())
-    // this.canvas.forEachObject(layer => (console.log('[LOG] layer.type: ', layer.type)));
+    // this.canvas.forEachObject(layer => (console.log('[LOG] layer.type: ', layer.type)))
   }
 }

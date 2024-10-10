@@ -40,6 +40,13 @@ const toolsFuncObj = {
   },
 }
 
+const toolFuncObj = {
+  tool_img: {
+    tailor: tailorImage,
+    replace: replaceImage,
+  }
+}
+
 onMounted(() => {
   template = new Template(tempObj)
 })
@@ -61,17 +68,24 @@ function toolsConfirm() {
   toolsHandle({ key: '', component: '', value: '' })
 }
 
-/**
- * 添加图片
- */
 async function addImage() {
-  try {
-    const url = await inputImageToDataURL();
-    const data = { tool: 'tool_img' };
-    await template.addImage({ url, data });
-  } catch (err) {
-    console.log('[LOG] catch: ', err);
-  }
+  const url = await inputImageToDataURL();
+  const data = { tool: 'tool_img' };
+  await template.addImage({ url, data });
+}
+
+function toolHandle(tool, key) {
+  if (!toolFuncObj[tool] || typeof toolFuncObj[tool][key] !== 'function') return
+  toolFuncObj[tool][key]();
+}
+
+async function replaceImage() {
+  const url = await inputImageToDataURL();
+  await template.replaceImage({ url });
+}
+
+function tailorImage() {
+  template.tailorImage();
 }
 </script>
 
@@ -93,10 +107,10 @@ async function addImage() {
       <UnitTab v-show="!hasTool" value-right="下载" @right="download"></UnitTab>
       <UnitTab v-show="hasTool" type="icon" value-right="check" @right="toolsConfirm"></UnitTab>
 
-      <UnitTools v-show="!hasTool" @click="toolsHandle($event)"></UnitTools>
+      <UnitTools v-show="!hasTool" @click="toolsHandle"></UnitTools>
 
       <KeepAlive>
-        <component :is="componentTool"></component>
+        <component :is="componentTool" @change="toolHandle"></component>
       </KeepAlive>
     </div>
   </div>
